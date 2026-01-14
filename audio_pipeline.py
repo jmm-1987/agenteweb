@@ -23,13 +23,9 @@ def _get_whisper_model():
         with _model_lock:
             if _whisper_model is None:
                 try:
-                    from faster_whisper import WhisperModel
+                    import whisper
                     logger.info(f"Cargando modelo Whisper: {config.WHISPER_MODEL}")
-                    _whisper_model = WhisperModel(
-                        config.WHISPER_MODEL,
-                        device=config.WHISPER_DEVICE,
-                        compute_type=config.WHISPER_COMPUTE_TYPE
-                    )
+                    _whisper_model = whisper.load_model(config.WHISPER_MODEL)
                     logger.info("Modelo Whisper cargado correctamente")
                 except Exception as e:
                     logger.error(f"Error cargando modelo Whisper: {e}")
@@ -92,7 +88,7 @@ def convert_to_wav(input_path: str, output_path: str = None) -> str:
 
 def transcribe_audio(audio_path: str, language: str = 'es') -> str:
     """
-    Transcribe audio usando faster-whisper
+    Transcribe audio usando openai-whisper
     
     Args:
         audio_path: Ruta del archivo de audio (WAV)
@@ -105,19 +101,13 @@ def transcribe_audio(audio_path: str, language: str = 'es') -> str:
         model = _get_whisper_model()
         logger.info(f"Iniciando transcripción: {audio_path}")
         
-        segments, info = model.transcribe(
+        result = model.transcribe(
             audio_path,
             language=language,
-            vad_filter=True,
-            vad_parameters=dict(min_silence_duration_ms=500)
+            fp16=False  # Usar float32 para compatibilidad
         )
         
-        # Concatenar segmentos
-        text_parts = []
-        for segment in segments:
-            text_parts.append(segment.text.strip())
-        
-        transcript = ' '.join(text_parts).strip()
+        transcript = result["text"].strip()
         logger.info(f"Transcripción completada: {len(transcript)} caracteres")
         
         if not transcript:
@@ -165,7 +155,8 @@ def preload_model():
     """Pre-carga el modelo Whisper (útil para build en Render)"""
     try:
         logger.info("Pre-cargando modelo Whisper...")
-        _get_whisper_model()
+        import whisper
+        whisper.load_model(config.WHISPER_MODEL)
         logger.info("Modelo pre-cargado correctamente")
     except Exception as e:
         logger.error(f"Error pre-cargando modelo: {e}")

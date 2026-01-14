@@ -13,11 +13,9 @@ def main():
     try:
         logger.info("Pre-cargando modelo Whisper...")
         logger.info(f"Modelo: {config.WHISPER_MODEL}")
-        logger.info(f"Device: {config.WHISPER_DEVICE}")
-        logger.info(f"Compute Type: {config.WHISPER_COMPUTE_TYPE}")
         
-        import audio_pipeline
-        audio_pipeline.preload_model()
+        import whisper
+        whisper.load_model(config.WHISPER_MODEL)
         
         logger.info("✅ Modelo pre-cargado correctamente")
         return 0
