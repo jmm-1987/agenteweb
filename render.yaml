@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: gestion-tareas-web
+    env: python
+    buildCommand: |
+      apt-get update -qq && apt-get install -y -qq ffmpeg &&
+      pip install --upgrade pip &&
+      pip install -r requirements.txt &&
+      python preload_whisper_model.py
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 300
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WHISPER_MODEL
+        value: base
+      - key: WHISPER_DEVICE
+        value: cpu
+      - key: WHISPER_COMPUTE_TYPE
+        value: int8
+      - key: DATA_DIR
+        value: /opt/render/project/src/data
+      - key: SQLITE_PATH
+        value: /opt/render/project/src/data/app.db
+    disk:
+      name: data-disk
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
+

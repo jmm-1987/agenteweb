@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Tareas - Administración{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header class="header">
+        <h1>📋 Administración de Tareas</h1>
+        <div style="margin-top: 1.5rem; display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ url_for('admin_clients') }}" class="btn btn-outline">👥 Clientes</a>
+            <a href="{{ url_for('admin_logout') }}" class="btn btn-secondary">🚪 Salir</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="card">
+            <h2>Todas las Tareas</h2>
+            <div id="adminTasksList" class="tasks-list"></div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+async function loadAdminTasks() {
+    try {
+        const response = await fetch('/api/tasks');
+        const data = await response.json();
+        
+        if (data.success) {
+            displayAdminTasks(data.tasks);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+function displayAdminTasks(tasks) {
+    const container = document.getElementById('adminTasksList');
+    
+    if (tasks.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No hay tareas</p></div>';
+        return;
+    }
+    
+    container.innerHTML = tasks.map(task => `
+        <div class="task-item ${task.status === 'completed' ? 'completed' : ''}">
+            <div class="task-header">
+                <div class="task-title">${escapeHtml(task.title)} <span class="task-id">#${task.id}</span></div>
+            </div>
+            <div class="task-meta">
+                ${task.client_name ? `<span class="badge badge-client">👤 ${escapeHtml(task.client_name)}</span>` : ''}
+                ${task.due_date ? `<span class="badge badge-date">📅 ${formatDate(task.due_date)}</span>` : ''}
+                <span class="badge badge-priority ${task.priority}">⚡ ${task.priority}</span>
+                <span class="badge" style="background: ${task.status === 'completed' ? '#404040' : '#dc2626'}; color: white;">
+                    ${task.status === 'completed' ? '✅ Completada' : '⏳ Pendiente'}
+                </span>
+            </div>
+            ${task.ampliacion ? `<div style="margin-top: 0.75rem; padding: 0.875rem; background: #fee2e2; border-radius: 8px; border-left: 3px solid #dc2626;">
+                <strong style="color: #dc2626;">Ampliación:</strong> ${escapeHtml(task.ampliacion)}
+            </div>` : ''}
+            ${task.solution ? `<div style="margin-top: 0.75rem; padding: 0.875rem; background: #fafafa; border-radius: 8px; border-left: 3px solid #404040;">
+                <strong style="color: #404040;">Solución:</strong> ${escapeHtml(task.solution)}
+            </div>` : ''}
+        </div>
+    `).join('');
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'Sin fecha';
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    } catch (e) {
+        return dateString;
+    }
+}
+
+loadAdminTasks();
+</script>
+{% endblock %}
+

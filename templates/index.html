@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Tareas - Inicio{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header class="header">
+        <h1>📋 Gestión de Tareas</h1>
+        <p class="subtitle">Gestiona tus tareas con comandos de voz</p>
+    </header>
+
+    <main class="main-content">
+        <!-- Sección de grabación de audio -->
+        <section class="audio-section">
+            <div class="card">
+                <h2>🎤 Grabar Audio</h2>
+                <div class="audio-controls">
+                    <button id="recordBtn" class="btn-record">
+                        <span class="btn-icon">🎙️</span>
+                    </button>
+                </div>
+                <div id="recordingStatus" class="recording-status"></div>
+                <p class="record-hint">Mantén pulsado para grabar</p>
+                <audio id="audioPlayback" controls style="display: none; width: 100%; margin-top: 1rem;"></audio>
+            </div>
+        </section>
+
+        <!-- Resultado de transcripción -->
+        <section id="transcriptSection" class="transcript-section" style="display: none;">
+            <div class="card">
+                <h2>📝 Transcripción</h2>
+                <div id="transcriptText" class="transcript-text"></div>
+                <div id="parsedInfo" class="parsed-info"></div>
+            </div>
+        </section>
+
+        <!-- Acciones rápidas -->
+        <section class="quick-actions">
+            <h2>Acciones Rápidas</h2>
+            <div class="action-buttons">
+                <button id="showTasksBtn" class="btn btn-outline">
+                    <span class="btn-icon">📋</span>
+                    <span class="btn-text">Ver Tareas</span>
+                </button>
+                <button id="closeTasksBtn" class="btn btn-outline">
+                    <span class="btn-icon">✅</span>
+                    <span class="btn-text">Cerrar Tareas</span>
+                </button>
+                <button id="ampliarTasksBtn" class="btn btn-outline">
+                    <span class="btn-icon">📝</span>
+                    <span class="btn-text">Ampliar Tareas</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Lista de tareas -->
+        <section id="tasksSection" class="tasks-section" style="display: none;">
+            <div class="card">
+                <h2>Tareas Pendientes</h2>
+                <div id="tasksList" class="tasks-list"></div>
+            </div>
+        </section>
+
+        <!-- Modal para confirmación -->
+        <div id="confirmModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3 id="modalTitle"></h3>
+                <p id="modalMessage"></p>
+                <div class="modal-actions">
+                    <button id="modalConfirm" class="btn btn-primary">Confirmar</button>
+                    <button id="modalCancel" class="btn btn-secondary">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading overlay -->
+        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+            <div class="spinner"></div>
+            <p>Procesando...</p>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/audio.js') }}"></script>
+<script src="{{ url_for('static', filename='js/tasks.js') }}"></script>
+{% endblock %}
+

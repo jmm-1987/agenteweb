@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Administración{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card" style="max-width: 400px; margin: 2rem auto;">
+        <h2>🔐 Login Administración</h2>
+        {% if error %}
+        <div style="background: #fee2e2; color: #dc2626; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 2px solid #dc2626; font-weight: 600;">
+            {{ error }}
+        </div>
+        {% endif %}
+        <form method="POST" action="{{ url_for('admin_login') }}">
+            <div style="margin-bottom: 1rem;">
+                <label for="password" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Contraseña:</label>
+                <input type="password" id="password" name="password" required 
+                       style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem;">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
+        </form>
+            <div style="margin-top: 1.5rem; text-align: center;">
+            <a href="{{ url_for('index') }}" style="color: #dc2626; text-decoration: none; font-weight: 600;">← Volver al inicio</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,8 @@
+Flask==3.0.0
+Werkzeug==3.0.1
+gunicorn==21.2.0
+faster-whisper==1.0.1
+rapidfuzz==3.5.2
+dateparser==1.2.0
+ffmpeg-python==0.2.0
+

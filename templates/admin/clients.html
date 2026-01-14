@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Clientes - Administración{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header class="header">
+        <h1>👥 Administración de Clientes</h1>
+        <div style="margin-top: 1.5rem; display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ url_for('admin_tasks') }}" class="btn btn-outline">📋 Tareas</a>
+            <a href="{{ url_for('admin_logout') }}" class="btn btn-secondary">🚪 Salir</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="card">
+            <h2>Clientes</h2>
+            <div id="clientsList" class="tasks-list"></div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+async function loadClients() {
+    try {
+        const response = await fetch('/api/clients');
+        const data = await response.json();
+        
+        if (data.success) {
+            displayClients(data.clients);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+function displayClients(clients) {
+    const container = document.getElementById('clientsList');
+    
+    if (clients.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No hay clientes</p></div>';
+        return;
+    }
+    
+    container.innerHTML = clients.map(client => `
+        <div class="task-item">
+            <div class="task-header">
+                <div class="task-title">${escapeHtml(client.name)}</div>
+            </div>
+            <div class="task-meta">
+                <span class="badge">Creado: ${formatDate(client.created_at)}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    } catch (e) {
+        return dateString;
+    }
+}
+
+loadClients();
+</script>
+{% endblock %}
+
