@@ -46,23 +46,18 @@ En la sección "Environment" del servicio, añade:
 
 ### 5. Configurar Build y Start
 
-Render debería detectar automáticamente desde `render.yaml`:
+Render detectará automáticamente el `Dockerfile` desde `render.yaml`:
 
-**Build Command:**
-```bash
-chmod +x build.sh && ./build.sh
-```
+**Dockerfile:**
+- Usa Python 3.11-slim como base
+- Instala todas las dependencias del sistema (FFmpeg y librerías de desarrollo)
+- Instala dependencias de Python
+- Pre-carga el modelo Whisper durante el build
 
-**Start Command:**
-```bash
-gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 300
-```
-
-**Nota importante:** Si Render no ejecuta el buildCommand automáticamente:
-1. Ve a la configuración del servicio en Render Dashboard
-2. En la sección "Build & Deploy", asegúrate de que el Build Command sea: `chmod +x build.sh && ./build.sh`
-3. Verifica que Python Version esté configurado como `3.11.0` (no 3.13)
-4. Desactiva Poetry si está habilitado automáticamente
+**Nota importante:** 
+- Render usará el Dockerfile automáticamente
+- No necesitas configurar Build Command manualmente
+- El Dockerfile maneja todas las dependencias del sistema
 
 ### 6. Desplegar
 

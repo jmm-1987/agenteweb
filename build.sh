@@ -2,8 +2,8 @@
 set -e
 
 echo "🔧 Instalando dependencias del sistema..."
-apt-get update -qq
-apt-get install -y -qq \
+sudo apt-get update -qq
+sudo apt-get install -y -qq \
     ffmpeg \
     libavformat-dev \
     libavcodec-dev \
