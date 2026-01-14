@@ -50,17 +50,19 @@ Render debería detectar automáticamente desde `render.yaml`:
 
 **Build Command:**
 ```bash
-apt-get update -qq && 
-apt-get install -y -qq ffmpeg libavformat-dev libavcodec-dev libavdevice-dev libavutil-dev libavfilter-dev libswscale-dev libswresample-dev libsm6 libxext6 libxrender-dev libgomp1 pkg-config &&
-pip install --upgrade pip &&
-pip install -r requirements.txt &&
-python preload_whisper_model.py
+chmod +x build.sh && ./build.sh
 ```
 
 **Start Command:**
 ```bash
 gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 300
 ```
+
+**Nota importante:** Si Render no ejecuta el buildCommand automáticamente:
+1. Ve a la configuración del servicio en Render Dashboard
+2. En la sección "Build & Deploy", asegúrate de que el Build Command sea: `chmod +x build.sh && ./build.sh`
+3. Verifica que Python Version esté configurado como `3.11.0` (no 3.13)
+4. Desactiva Poetry si está habilitado automáticamente
 
 ### 6. Desplegar
 

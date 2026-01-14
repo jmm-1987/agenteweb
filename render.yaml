@@ -2,16 +2,13 @@ services:
   - type: web
     name: gestion-tareas-web
     env: python
-    buildCommand: |
-      apt-get update -qq && 
-      apt-get install -y -qq ffmpeg libavformat-dev libavcodec-dev libavdevice-dev libavutil-dev libavfilter-dev libswscale-dev libswresample-dev libsm6 libxext6 libxrender-dev libgomp1 pkg-config &&
-      pip install --upgrade pip &&
-      pip install -r requirements.txt &&
-      python preload_whisper_model.py
+    buildCommand: chmod +x build.sh && ./build.sh
     startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 300
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+      - key: POETRY_ENABLED
+        value: "false"
       - key: ADMIN_PASSWORD
         sync: false
       - key: SECRET_KEY
