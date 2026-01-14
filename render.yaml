@@ -1,9 +1,12 @@
 services:
   - type: web
     name: gestion-tareas-web
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
       - key: ADMIN_PASSWORD
         sync: false
       - key: SECRET_KEY

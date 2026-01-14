@@ -46,18 +46,22 @@ En la sección "Environment" del servicio, añade:
 
 ### 5. Configurar Build y Start
 
-Render detectará automáticamente el `Dockerfile` desde `render.yaml`:
+Render detectará automáticamente desde `render.yaml`:
 
-**Dockerfile:**
-- Usa Python 3.11-slim como base
-- Instala todas las dependencias del sistema (FFmpeg y librerías de desarrollo)
-- Instala dependencias de Python
-- Pre-carga el modelo Whisper durante el build
+**Build Command:**
+```bash
+pip install -r requirements.txt
+```
+
+**Start Command:**
+```bash
+gunicorn app:app --bind 0.0.0.0:$PORT
+```
 
 **Nota importante:** 
-- Render usará el Dockerfile automáticamente
-- No necesitas configurar Build Command manualmente
-- El Dockerfile maneja todas las dependencias del sistema
+- Render usará Python 3.11.0 automáticamente
+- El build es simple y directo
+- Si hay problemas con la compilación de `av`, puede que necesites configurar las dependencias del sistema manualmente en Render
 
 ### 6. Desplegar
 

@@ -120,6 +120,22 @@ class IntentParser:
                     best_intent = 'LISTAR'
                     best_confidence = 0.5
         
+        # Si sigue siendo UNKNOWN, intentar detectar por contexto
+        # Si hay una fecha y verbos de acción, probablemente es CREAR
+        if best_intent == 'UNKNOWN':
+            # Verificar si hay fecha
+            date = self._extract_date(text)
+            # Verificar si hay verbos de acción comunes
+            action_verbs = ['ir', 'ir a', 'hacer', 'llamar', 'enviar', 'firmar', 
+                           'reunir', 'reunión', 'visitar', 'comprar', 'pagar',
+                           'entregar', 'recoger', 'presentar', 'enviar']
+            has_action = any(verb in text for verb in action_verbs)
+            
+            # Si hay fecha y acción, probablemente es crear tarea
+            if date and has_action:
+                best_intent = 'CREAR'
+                best_confidence = 0.4
+        
         return best_intent, best_confidence
     
     def _extract_create_entities(self, text: str) -> Dict:
@@ -321,10 +337,13 @@ class IntentParser:
             title = re.sub(r'\bcliente\s+' + re.escape(client_name), '', title, flags=re.IGNORECASE)
             title = re.sub(r'\b' + re.escape(client_name), '', title, flags=re.IGNORECASE)
         
-        # Eliminar palabras de fecha
+        # Eliminar palabras de fecha (pero mantener el contexto)
         date_words = ['hoy', 'mañana', 'pasado mañana', 'ayer', 'lunes', 'martes', 
                      'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
         for word in date_words:
+            # Eliminar "mañana" pero mantener "ir mañana a" -> "ir a"
+            if word == 'mañana':
+                title = re.sub(r'\bmañana\s+a\b', 'a', title, flags=re.IGNORECASE)
             title = re.sub(r'\b' + word + r'\b', '', title, flags=re.IGNORECASE)
         
         # Eliminar palabras de prioridad
@@ -332,8 +351,13 @@ class IntentParser:
         for word in priority_words:
             title = re.sub(r'\b' + word + r'\b', '', title, flags=re.IGNORECASE)
         
-        # Limpiar espacios múltiples
+        # Limpiar espacios múltiples y "a a" -> "a"
+        title = re.sub(r'\ba\s+a\b', 'a', title, flags=re.IGNORECASE)
         title = ' '.join(title.split())
+        
+        # Si después de limpiar queda muy poco, usar el texto original
+        if len(title.strip()) < 10:
+            return text.strip()
         
         return title.strip() if title.strip() else text.strip()
 
