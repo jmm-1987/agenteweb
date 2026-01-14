@@ -51,7 +51,7 @@ Render debería detectar automáticamente desde `render.yaml`:
 **Build Command:**
 ```bash
 apt-get update -qq && 
-apt-get install -y -qq ffmpeg libsm6 libxext6 libxrender-dev libgomp1 &&
+apt-get install -y -qq ffmpeg libavformat-dev libavcodec-dev libavdevice-dev libavutil-dev libavfilter-dev libswscale-dev libswresample-dev libsm6 libxext6 libxrender-dev libgomp1 pkg-config &&
 pip install --upgrade pip &&
 pip install -r requirements.txt &&
 python preload_whisper_model.py
